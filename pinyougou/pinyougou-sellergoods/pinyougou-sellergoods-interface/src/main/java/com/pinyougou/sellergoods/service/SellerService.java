@@ -7,4 +7,17 @@ import com.pinyougou.vo.PageResult;
 public interface SellerService extends BaseService<TbSeller> {
 
     PageResult search(Integer page, Integer rows, TbSeller seller);
+
+    /**
+     * 查询商家
+     * @param sellerId
+     * @return
+     */
+    TbSeller findSellerBySellerId(String sellerId);
+
+    /**
+     * 更新用户密码
+     * @param seller
+     */
+    void updatePassword(TbSeller seller);
 }
