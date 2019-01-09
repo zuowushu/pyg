@@ -80,4 +80,40 @@ app.controller("orderInfoController", function ($scope, cartService, addressServ
         });
     };
 
+    $scope.entity = {"user_id":"","contact":"", "address":"", "mobile":"","alias":""};
+    //新增收货地址
+    $scope.saveAddress = function () {
+
+        if ($scope.entity.contact == "") {
+            alert("请输入收货人");
+            return;
+        }
+        if ($scope.entity.address == "") {
+            alert("请输入详细地址");
+            return;
+        }
+
+        if ($scope.entity.mobile == "") {
+            alert("请输入联系电话");
+            return;
+        }
+
+        if ($scope.entity.alias == "") {
+            alert("请输入地址别名");
+            return;
+        }
+        $scope.entity.user_id = $scope.username;
+
+        addressService.saveAddress($scope.entity).success(function (response) {
+            if (response.success){
+                alert("新增成功！");
+                location.href = "getOrderInfo.html";
+            } else if("增加失败" == response.message){
+                alert("新增失败!");
+            }else {
+                alert(response.message);
+            }
+        });
+    };
+
 });

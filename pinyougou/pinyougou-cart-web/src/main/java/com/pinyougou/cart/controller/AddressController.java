@@ -1,6 +1,7 @@
 package com.pinyougou.cart.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.pinyougou.common.util.PhoneFormatCheckUtils;
 import com.pinyougou.pojo.TbAddress;
 import com.pinyougou.user.service.AddressService;
 import com.pinyougou.vo.PageResult;
@@ -8,6 +9,7 @@ import com.pinyougou.vo.Result;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/address")
@@ -43,13 +45,20 @@ public class AddressController {
 
     @PostMapping("/add")
     public Result add(@RequestBody TbAddress address) {
+        Result result = Result.fail("增加失败");
         try {
-            addressService.add(address);
-            return Result.ok("增加成功");
+            if (PhoneFormatCheckUtils.isPhoneLegal(address.getMobile())) {
+                address.setCreateDate(new Date());
+                address.setIsDefault("0");
+                addressService.add(address);
+                result = Result.ok("增加成功");
+            }else {
+                result = Result.fail("手机号码不正确，增加失败");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("增加失败");
+        return result;
     }
 
     @GetMapping("/findOne")

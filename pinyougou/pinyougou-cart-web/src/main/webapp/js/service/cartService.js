@@ -32,4 +32,5 @@ app.service("cartService", function ($http) {
 
         return $http.post("order/add.do", order);
     };
+
 });
