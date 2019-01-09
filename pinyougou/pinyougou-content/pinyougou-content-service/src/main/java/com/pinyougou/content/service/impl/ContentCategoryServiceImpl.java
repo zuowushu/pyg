@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service(interfaceClass = ContentCategoryService.class)
 public class ContentCategoryServiceImpl extends BaseServiceImpl<TbContentCategory> implements ContentCategoryService {
-/*11*/
+/*1123*/
     @Autowired
     private ContentCategoryMapper contentCategoryMapper;
 
