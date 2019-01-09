@@ -18,6 +18,7 @@ public class MessageListener {
     /**
      * 接收MQ队列消息；然后利用阿里大于发送短信
      * @param map 要发送的信息
+     *
      */
     @JmsListener(destination = "itcast_sms_queue")
     public void receiveMQMsg(Map<String, String> map){
