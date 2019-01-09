@@ -40,7 +40,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="fastdfs_client" target="1.8" />
+      <module name="fastdfs_client" target="1.5" />
       <module name="itcast-sms" target="1.8" />
       <module name="pinyougou" target="1.8" />
       <module name="pinyougou-cart" target="1.8" />
