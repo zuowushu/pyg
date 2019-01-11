@@ -1,4 +1,4 @@
-app.controller("indexController", function ($scope,contentService1) {
+app.controller("indexController", function ($scope,contentService) {
 
     $scope.contentList = [];
 
