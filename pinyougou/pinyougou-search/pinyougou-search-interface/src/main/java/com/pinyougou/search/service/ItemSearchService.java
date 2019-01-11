@@ -1,5 +1,6 @@
 package com.pinyougou.search.service;
 
+import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.pojo.TbItem;
 
 import java.util.List;
@@ -25,4 +26,13 @@ public interface ItemSearchService {
      * @param goodsIdsList spu id数组
      */
     void deleteByGoodsIds(List<Long> goodsIdsList);
+    /**
+     * 根据商家id商家商品列表
+     * @param sellerId 商家id
+     * @return 商家商品列表
+     */
+    List<TbItem> findSellerList(String sellerId);
+
+
+
 }

@@ -6,11 +6,13 @@ import com.github.pagehelper.PageInfo;
 import com.pinyougou.mapper.ContentMapper;
 import com.pinyougou.pojo.TbContent;
 import com.pinyougou.content.service.ContentService;
+import com.pinyougou.pojo.TbItemCat;
 import com.pinyougou.service.impl.BaseServiceImpl;
 import com.pinyougou.vo.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import tk.mybatis.mapper.entity.Example;
 
 import java.io.Serializable;
@@ -22,7 +24,6 @@ public class ContentServiceImpl extends BaseServiceImpl<TbContent> implements Co
 
     //内容列表在redis中的键名key的名称
     private static final String CONTENT_LIST = "CONTENT_LIST";
-
     @Autowired
     private ContentMapper contentMapper;
 
@@ -119,6 +120,7 @@ public class ContentServiceImpl extends BaseServiceImpl<TbContent> implements Co
         try {
             //将内容列表存入redis
             redisTemplate.boundHashOps(CONTENT_LIST).put(categoryId, contentList);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,4 +128,5 @@ public class ContentServiceImpl extends BaseServiceImpl<TbContent> implements Co
         //2、返回列表
         return contentList;
     }
+
 }

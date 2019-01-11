@@ -1,4 +1,4 @@
-app.controller("searchController", function ($scope,$location, searchService) {
+app.controller("searchController", function ($scope,$location,$http, searchService) {
 
     //搜索条件对象
     $scope.searchMap = {"keywords":"", "category":"", "brand":"", "spec":{}, "price":"", "pageNo":1, "pageSize":20, "sortField":"", "sort":""};
@@ -115,7 +115,6 @@ app.controller("searchController", function ($scope,$location, searchService) {
     $scope.sortSearch = function (sortField, sort) {
         $scope.searchMap.sortField = sortField;
         $scope.searchMap.sort = sort;
-
         $scope.search();
     };
 
@@ -126,4 +125,25 @@ app.controller("searchController", function ($scope,$location, searchService) {
         $scope.search();
     };
 
+
+     $scope.findSellerList = function () {
+        var sellerId = $location.search()["sellerId"];
+         searchService.findSellerList(sellerId).success(function (response) {
+             $scope.sellerMap = response;
+         });
+
+    };
+    $scope.addToShopCart = function (id) {
+        alert(id)
+        $http.get("http://cart.pinyougou.com/cart/addItemToCartList.do?itemId="
+            + id+ "&num=" + 1,{"withCredentials":true})
+            .success(function (response) {
+                if (response.success) {
+                    location.href = "http://cart.pinyougou.com";
+                } else {
+                    alert(response.message);
+                }
+            });
+
+    };
 });
