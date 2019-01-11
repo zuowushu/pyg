@@ -5,6 +5,7 @@ import com.pinyougou.pojo.TbSeller;
 import com.pinyougou.sellergoods.service.SellerService;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,9 +53,16 @@ public class SellerController {
         return Result.fail("商家入驻失败");
     }
 
-    @GetMapping("/findOne")
+   /* @GetMapping("/findOne")
     public TbSeller findOne(String id) {
+        id = SecurityContextHolder.getContext().getAuthentication().getName();
         return sellerService.findOne(id);
+    }*/
+
+    @GetMapping("/findOne")
+    public TbSeller findOne() {
+        String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+        return sellerService.findOne(sellerId);
     }
 
     @PostMapping("/update")
