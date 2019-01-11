@@ -20,4 +20,5 @@ app.controller("indexController", function ($scope, userService) {
             $scope.orderList = response;
         });
     };
+
 });

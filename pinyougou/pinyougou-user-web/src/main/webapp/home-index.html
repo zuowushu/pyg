@@ -16,7 +16,7 @@
     <script src="js/controller/indexController.js"></script>
 </head>
 
-<body ng-app="pinyougou" ng-controller="indexController" ng-init="getUsername();findAllOrder()">
+<body ng-app="pinyougou" ng-controller="indexController" ng-init="getUsername();findAllOrder();">
     <!-- 头部栏位 -->
     <!--页面顶部-->
 <div id="nav-bottom">
@@ -165,7 +165,8 @@ $(function(){
                     <div class="list-items">
                         <dl>
 							<dt><i>·</i> 订单中心</dt>
-							<dd ><a href="home-index.html"  class="list-active" >我的订单</a></dd>
+							<dd ><a href="home-index.html" class="list-active">我的订单</a></dd>
+							<dd ><a href="home-seckill.html">秒杀订单</a></dd>
 							<dd><a href="home-order-pay.html" >待付款</a></dd>
 							<dd><a href="home-order-send.html"  >待发货</a></dd>
 							<dd><a href="home-order-receive.html" >待收货</a></dd>
@@ -230,7 +231,7 @@ $(function(){
                                             <td width="35%">
                                                 <div class="typographic"><img src="{{order.picPath}}" width="100px" height="100px"/>
                                                     <a href=http://item.pinyougou.com/{{orders.goodsId}}.html class="block-text">{{order.title}}</a>
-                                                    <span class="guige">规格：{{orders.goodsDesc}}</span>
+                                                    <!--<span class="guige">规格：{{orders.goodsDesc}}</span>-->
                                                 </div>
                                             </td>
                                             <td width="5%" class="center">
@@ -241,7 +242,14 @@ $(function(){
                                             </td>
                                             <td width="5%" class="center">{{order.num}}</td>
                                             <td width="8%" class="center">
-                                               
+												<ul class="unstyled" ng-if="orders.status == 1 ? 'style=display:none' : ''">
+													<li>未付款</li>
+													<li><a href="#" class="btn">退货/退款</a></li>
+												</ul>
+												<ul class="unstyled" ng-if="orders.status == 2 ? 'style=display:none' : ''">
+													<li>付款未发货</li>
+													<li><a href="#" class="btn">退货/退款</a></li>
+												</ul>
                                             </td>
                                             <td width="10%" class="center" >
                                                 <ul class="unstyled">
@@ -252,15 +260,30 @@ $(function(){
                                             <td width="10%" class="center">
                                                 <ul class="unstyled">
                                                     <li>{{orders.transaction}}</li>
-                                                    <li><a href="home-orderDetail.html" class="btn">订单详情 </a></li>
+                                                    <li><a href="home-orderDetail.html" class="btn">订单详情</a></li>
                                                 </ul>
                                             </td>
                                             <td width="10%" class="center">
-                                                <ul class="unstyled">
-													<li><a href="#" class="sui-btn btn-info">立即付款</a></li>
-                                                    <li>取消订单</li>
+                                                <ul class="unstyled"  ng-if="orders.status == 1 ? 'style=display:none' : ''">
+													<li><a href="http://cart.pinyougou.com/pay.html#?outTradeNo={{orders.orderId}}&totalFee={{order.totalFee}}" class="sui-btn btn-info">立即付款</a></li>
+													<li><a href="#" class="btn">取消订单</a></li>
                                                     
                                                 </ul>
+
+												<ul class="unstyled" ng-if="orders.status == 2 ? 'style=display:none' : ''">
+													<li><a href="#" class="sui-btn btn-info">提醒发货</a></li>
+												</ul>
+
+												<ul class="unstyled"  ng-if="orders.status == 3 ? 'style=display:none' : ''">
+													<li><a href="#" class="sui-btn btn-info">提醒发货</a></li>
+												</ul>
+												<ul class="unstyled"  ng-if="orders.status == 4 ? 'style=display:none' : ''">
+													<li>还剩4天23时</li>
+													<li><a href="#" class="sui-btn btn-info">确认发货</a></li>
+												</ul>
+												<ul class="unstyled"  ng-if="orders.status == 5 ? 'style=display:none' : ''">
+													<li><a href="#" class="sui-btn btn-info">申请售后</a></li>
+												</ul>
                                             </td>
                                         </tr>
                                         

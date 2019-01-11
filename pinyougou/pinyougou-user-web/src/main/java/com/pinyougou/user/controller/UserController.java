@@ -155,6 +155,7 @@ public class UserController {
 
 
     @GetMapping("/findAllOrder")
+    @CrossOrigin(origins = {"http://item.pinyougou.com","http://search.pinyougou.com","http://cart.pinyougou.com"}, allowCredentials = "true")
     public List<Orders> findAllOrder() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Orders> orders = orderService.findOrdersByUserIdAndOrderId(userId);

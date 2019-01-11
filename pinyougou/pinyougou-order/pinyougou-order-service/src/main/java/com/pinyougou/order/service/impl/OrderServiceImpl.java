@@ -1,6 +1,7 @@
 package com.pinyougou.order.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -21,10 +22,7 @@ import tk.mybatis.mapper.entity.Example;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service(interfaceClass = OrderService.class)
 public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderService {
@@ -61,17 +59,17 @@ public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderS
         Example example = new Example(TbOrder.class);
         Example.Criteria criteria = example.createCriteria();
 
-        if(!StringUtils.isEmpty(order.getSellerId())){
+        if (!StringUtils.isEmpty(order.getSellerId())) {
             criteria.andEqualTo("sellerId", order.getSellerId());
         }
-        if(!StringUtils.isEmpty(order.getOrderId())){
+        if (!StringUtils.isEmpty(order.getOrderId())) {
             criteria.andLike("orderId", "%" + order.getOrderId() + "%");
         }
-        if(!StringUtils.isEmpty(order.getShippingCode())){
+        if (!StringUtils.isEmpty(order.getShippingCode())) {
             criteria.andLike("shippingCode", "%" + order.getShippingCode() + "%");
         }
 
-        if(!StringUtils.isEmpty(order.getStatus())){
+        if (!StringUtils.isEmpty(order.getStatus())) {
             criteria.andEqualTo("status", order.getStatus());
         }
 
@@ -216,43 +214,44 @@ public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderS
             orders.setPayment(order.getPayment());
             Long orderId = order.getOrderId();
             orders.setOrderId(orderId);
-            if ("1".equals(order.getStatus())){
+            if ("1".equals(order.getStatus())) {
                 orders.setTransaction("等待买家付款");
             }
-            if ("2".equals(order.getStatus())){
+            if ("2".equals(order.getStatus())) {
                 orders.setTransaction("买家已支付");
             }
-            if ("3".equals(order.getStatus())){
+            if ("3".equals(order.getStatus())) {
                 orders.setTransaction("未发货");
             }
-            if ("4".equals(order.getStatus())){
+            if ("4".equals(order.getStatus())) {
                 orders.setTransaction("已发货");
             }
-            if ("5".equals(order.getStatus())){
+            if ("5".equals(order.getStatus())) {
                 orders.setTransaction("交易成功");
             }
-            if ("6".equals(order.getStatus())){
+            if ("6".equals(order.getStatus())) {
                 orders.setTransaction("交易关闭");
             }
-            if ("7".equals(order.getStatus())){
+            if ("7".equals(order.getStatus())) {
                 orders.setTransaction("待评价");
             }
             example = new Example(TbOrderItem.class);
-            example.createCriteria().andEqualTo("orderId",orderId);
+            example.createCriteria().andEqualTo("orderId", orderId);
             List<TbOrderItem> orderItemList = orderItemMapper.selectByExample(example);
             orders.setOrderItemList(orderItemList);
             for (TbOrderItem orderItem : orderItemList) {
 
-            TbItem item = itemMapper.selectByPrimaryKey(orderItem.getItemId());
-            orders.setSeller(item.getSeller());
-            orders.setItemId(item.getId());
+                TbItem item = itemMapper.selectByPrimaryKey(orderItem.getItemId());
+                orders.setSeller(item.getSeller());
+                orders.setItemId(item.getId());
 
-            TbGoodsDesc goodsDesc = goodsDescMapper.selectByPrimaryKey(orderItem.getGoodsId());
-            orders.setGoodsDesc(goodsDesc.getCustomAttributeItems());
-            orders.setGoodsId(goodsDesc.getGoodsId());
+                TbGoodsDesc goodsDesc = goodsDescMapper.selectByPrimaryKey(orderItem.getGoodsId());
+                /*JSON.toJSONString(goodsDesc);
+                orders.setGoodsDesc(goodsDesc.getCustomAttributeItems());*/
+                orders.setGoodsId(goodsDesc.getGoodsId());
             }
 
-        ordersList.add(orders);
+            ordersList.add(orders);
         }
 
         return ordersList;
