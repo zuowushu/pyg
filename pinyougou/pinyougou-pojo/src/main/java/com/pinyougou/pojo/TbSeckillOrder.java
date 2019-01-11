@@ -1,5 +1,8 @@
 package com.pinyougou.pojo;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +15,7 @@ import java.util.Date;
 public class TbSeckillOrder implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long id;
 
     private Long seckillId;

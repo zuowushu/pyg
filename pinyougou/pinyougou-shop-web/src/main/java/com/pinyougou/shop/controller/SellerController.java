@@ -40,6 +40,7 @@ public class SellerController {
             //设置审核状态为 未审核
             seller.setStatus("0");
             seller.setCreateTime(new Date());
+
             BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
             seller.setPassword(bCryptPasswordEncoder.encode(seller.getPassword()));
 
