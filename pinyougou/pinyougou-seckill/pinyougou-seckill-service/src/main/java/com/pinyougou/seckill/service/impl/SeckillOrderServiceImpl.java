@@ -44,9 +44,16 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
 
         Example example = new Example(TbSeckillOrder.class);
         Example.Criteria criteria = example.createCriteria();
-        /*if(!StringUtils.isEmpty(seckillOrder.get***())){
-            criteria.andLike("***", "%" + seckillOrder.get***() + "%");
-        }*/
+        if(!StringUtils.isEmpty(seckillOrder.getId())){
+            criteria.andLike("id", "%" + seckillOrder.getId() + "%");
+        }
+
+        if(!StringUtils.isEmpty(seckillOrder.getSellerId())){
+            criteria.andLike("sellerId",seckillOrder.getSellerId());
+        }
+        if(!StringUtils.isEmpty(seckillOrder.getStatus())){
+            criteria.andLike("status","%"+seckillOrder.getStatus()+"%");
+        }
 
         List<TbSeckillOrder> list = seckillOrderMapper.selectByExample(example);
         PageInfo<TbSeckillOrder> pageInfo = new PageInfo<>(list);

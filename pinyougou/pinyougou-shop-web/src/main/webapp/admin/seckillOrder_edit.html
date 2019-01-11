@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>订单详细信息</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+  
+    <link rel="stylesheet" href="../plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../plugins/adminLTE/css/AdminLTE.css">
+    <link rel="stylesheet" href="../plugins/adminLTE/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+	<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="../plugins/angularjs/angular.min.js"></script>
+
+    <script src="../js/base.js"></script>
+    <script src="../js/service/seckillOrderService.js"></script>
+    <script src="../js/controller/baseController.js"></script>
+    <script src="../js/controller/seckillOrderController.js"></script>
+
+
+</head>
+
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="seckillOrderController" ng-init="findOne()" >
+
+
+            <!-- 正文区域 -->
+            <section class="content">
+
+                <div class="box-body">
+
+                    <!--tab页-->
+                    <div class="nav-tabs-custom">
+
+                        <!--tab头-->
+                        <ul class="nav nav-tabs">
+                       		
+                            <li class="active">
+                                <a href="#home" data-toggle="tab">订单信息</a>
+                            </li>                            
+                        </ul>
+                        <!--tab头/-->
+						
+                        <!--tab内容-->
+                        <div class="tab-content">
+
+                            <!--表单内容-->
+                            <div class="tab-pane active" id="home">
+                                <div class="row data-type" >
+
+                                    <div class="col-md-2 title">订单id</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control"  ng-model="entity.id"  placeholder="订单id" value="">
+                                    </div>
+									
+									<div class="col-md-2 title">秒杀商品id</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control" ng-model="entity.seckillId"  placeholder="秒杀商品id" value="">
+                                    </div>
+                                    
+                                    <div class="col-md-2 title">支付金额</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control"  ng-model="entity.money"  placeholder="支付金额" value="">
+                                    </div>
+                                    
+                                    <div class="col-md-2 title">用户</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control"  ng-model="entity.userId"  placeholder="用户" value="">
+                                    </div>
+                                    
+                                    <div class="col-md-2 title">商家</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control" ng-model="entity.sellerId"   placeholder="商家" value="">
+                                    </div>
+                                    
+                                    <div class="col-md-2 title">创建时间</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control" ng-model="entity.createTime | date:'yyyy-MM-dd HH:mm'"   placeholder="创建时间" value="">
+                                    </div>
+                                    
+                                    <div class="col-md-2 title">支付时间</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control" ng-model="entity.payTime | date:'yyyy-MM-dd HH:mm'"   placeholder="支付时间" value="">
+                                    </div>
+
+                                    <div class="col-md-2 title">订单状态</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control"  ng-model="entity.status"  placeholder="订单状态" value="">
+                                    </div>
+
+                                     
+                                    <div class="col-md-2 title">收货地址</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control" ng-model="entity.receiverAddress"   placeholder="收货地址" value="">
+                                    </div>
+                                    
+ 									<div class="col-md-2 title">收货人</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control" ng-model="entity.receiver"  placeholder="收货人" value="">
+                                    </div>
+                                    
+                                    <div class="col-md-2 title">收货人电话</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control" ng-model="entity.receiverMobile"   placeholder="收货人电话" value="">
+                                    </div>
+                                    
+ 									<div class="col-md-2 title">交易流水</div>
+                                    <div class="col-md-10 data">
+                                        <input type="text" class="form-control" ng-model="entity.transactionId"   placeholder="交易流水" value="">
+                                    </div>
+
+                                </div>
+                            </div>
+                            
+                            
+                           
+                            
+                        </div>
+                        <!--tab内容/-->
+						<!--表单内容/-->
+							 
+                    </div>
+
+                 	
+                   </div>
+                  <div class="btn-toolbar list-toolbar">
+				      <button class="btn btn-primary" onclick="history.go(-1)"><i class="fa fa-save"></i>返回</button>
+				     <!-- <a ng-click="submit()" data-toggle="modal" class="btn btn-danger">提交</a>-->
+				  </div>
+			
+            </section>
+            <!-- 正文区域 /-->
+			
+       
+</body>
+
+</html>

@@ -1,12 +1,12 @@
 //定义处理器
-app.controller("orderController", function ($scope,$location, $http, $controller, orderService) {
+app.controller("seckillOrderController", function ($scope,$location, $http, $controller, seckillOrderService) {
 
     //继承一个controller
     $controller("baseController", {$scope:$scope});
 
     //查询所有
     $scope.findAll = function () {
-        orderService.findAll().success(function (response) {
+        seckillOrderService.findAll().success(function (response) {
             $scope.list = response;
 
         }).error(function () {
@@ -18,7 +18,7 @@ app.controller("orderController", function ($scope,$location, $http, $controller
 
     //根据分页信息查询
     $scope.findPage = function (page, rows) {
-        orderService.findPage(page, rows).success(function (response) {
+        seckillOrderService.findPage(page, rows).success(function (response) {
             //response 分页结果对象total,rows
             $scope.list = response.rows;
             //总记录数
@@ -34,9 +34,9 @@ app.controller("orderController", function ($scope,$location, $http, $controller
         var obj;
         if($scope.entity.id != null){
             //修改
-            obj = orderService.update($scope.entity);
+            obj = seckillOrderService.update($scope.entity);
         } else {
-            obj = orderService.add($scope.entity);
+            obj = seckillOrderService.add($scope.entity);
         }
 
         obj.success(function (response) {
@@ -55,7 +55,7 @@ app.controller("orderController", function ($scope,$location, $http, $controller
     $scope.findOne = function () {
         $scope.id=$location.search()["id"];
         //alert($scope.id);
-        orderService.findOne($scope.id).success(function (response) {
+        seckillOrderService.findOne($scope.id).success(function (response) {
             $scope.entity = response;
         });
     };
@@ -68,7 +68,7 @@ app.controller("orderController", function ($scope,$location, $http, $controller
         }
         if(confirm("确定要删除选择了那些记录吗？")){
             //如果点击了 确定 则返回true
-            orderService.delete($scope.selectedIds).success(function (response) {
+            seckillOrderService.delete($scope.selectedIds).success(function (response) {
                 if (response.success) {
                     $scope.reloadList();
                 } else {
@@ -85,7 +85,7 @@ app.controller("orderController", function ($scope,$location, $http, $controller
     //查询方法
     $scope.search = function (page, rows) {
 
-        orderService.search(page, rows, $scope.searchEntity).success(function (response) {
+        seckillOrderService.search(page, rows, $scope.searchEntity).success(function (response) {
             //response 分页结果对象total,rows
             $scope.list = response.rows;
             //总记录数

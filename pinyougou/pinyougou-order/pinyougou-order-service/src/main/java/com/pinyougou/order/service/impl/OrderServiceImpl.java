@@ -50,6 +50,10 @@ public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderS
 
         Example example = new Example(TbOrder.class);
         Example.Criteria criteria = example.createCriteria();
+
+        if(!StringUtils.isEmpty(order.getSellerId())){
+            criteria.andEqualTo("sellerId", order.getSellerId());
+        }
         if(!StringUtils.isEmpty(order.getOrderId())){
             criteria.andLike("orderId", "%" + order.getOrderId() + "%");
         }
