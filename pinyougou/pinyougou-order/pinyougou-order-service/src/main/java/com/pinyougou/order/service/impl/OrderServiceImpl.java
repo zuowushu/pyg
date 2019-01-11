@@ -50,9 +50,16 @@ public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderS
 
         Example example = new Example(TbOrder.class);
         Example.Criteria criteria = example.createCriteria();
-        /*if(!StringUtils.isEmpty(order.get***())){
-            criteria.andLike("***", "%" + order.get***() + "%");
-        }*/
+        if(!StringUtils.isEmpty(order.getOrderId())){
+            criteria.andLike("orderId", "%" + order.getOrderId() + "%");
+        }
+        if(!StringUtils.isEmpty(order.getShippingCode())){
+            criteria.andLike("shippingCode", "%" + order.getShippingCode() + "%");
+        }
+
+        if(!StringUtils.isEmpty(order.getStatus())){
+            criteria.andEqualTo("status", order.getStatus());
+        }
 
         List<TbOrder> list = orderMapper.selectByExample(example);
         PageInfo<TbOrder> pageInfo = new PageInfo<>(list);

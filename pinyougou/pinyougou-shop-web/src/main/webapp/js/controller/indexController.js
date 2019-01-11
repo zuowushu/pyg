@@ -28,7 +28,7 @@ app.controller("indexController", function ($scope, loginService) {
             if(response.success){
                alert(response.message);
                //跳转到登录页面
-                location.href="../shoplogin.html";
+                parent.location.href="../shoplogin.html";
             }else{
                 alert(response.message);
             }
