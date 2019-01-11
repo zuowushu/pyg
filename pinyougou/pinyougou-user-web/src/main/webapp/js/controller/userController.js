@@ -1,4 +1,4 @@
-app.controller("userController", function ($scope, $controller, userService) {
+app.controller("userController", function ($scope, $controller, userService,addressService) {
 
     $scope.entity = {"username":"", "password":"", "phone":""};
     $scope.register = function () {
@@ -37,4 +37,5 @@ app.controller("userController", function ($scope, $controller, userService) {
             alert(response.message);
         });
     };
+
 });
