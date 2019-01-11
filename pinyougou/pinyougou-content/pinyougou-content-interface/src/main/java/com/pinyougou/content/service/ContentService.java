@@ -1,6 +1,7 @@
 package com.pinyougou.content.service;
 
 import com.pinyougou.pojo.TbContent;
+import com.pinyougou.pojo.TbItemCat;
 import com.pinyougou.service.BaseService;
 import com.pinyougou.vo.PageResult;
 
@@ -16,4 +17,5 @@ public interface ContentService extends BaseService<TbContent> {
      * @return 内容列表
      */
     List<TbContent> findContentListByCategoryId(Long categoryId);
+
 }

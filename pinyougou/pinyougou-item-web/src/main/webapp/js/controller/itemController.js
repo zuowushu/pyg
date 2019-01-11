@@ -74,4 +74,7 @@ app.controller("itemController", function ($scope, $http) {
                 }
             });
     };
+    $scope.goinSeller = function (sellerId) {
+        location.href = "http://search.pinyougou.com/shop.html#?sellerId="+sellerId;
+    }
 });
