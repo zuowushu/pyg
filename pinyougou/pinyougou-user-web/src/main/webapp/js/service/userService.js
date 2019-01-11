@@ -12,5 +12,14 @@ app.service("userService",function($http){
     this.getUsername = function () {
         return $http.get("user/getUsername.do?r=" + Math.random());
 
-    }
+    };
+
+    this.findAllOrder = function () {
+        return $http.get("user/findAllOrder.do?t=" + Math.random());
+    };
+
+    this.findAllOrderItem = function () {
+        return $http.get("user/findAllOrderItem.do?t=" + Math.random());
+
+    };
 });

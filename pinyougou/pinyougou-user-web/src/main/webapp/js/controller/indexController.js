@@ -5,4 +5,19 @@ app.controller("indexController", function ($scope, userService) {
             $scope.username = response.username;
         });
     };
+
+
+    $scope.findAllOrderItem = function () {
+        userService.findAllOrderItem().success(function (response) {
+            $scope.orderItemList = response;
+
+        })
+    };
+
+
+    $scope.findAllOrder = function () {
+        userService.findAllOrder().success(function (response) {
+            $scope.orderList = response;
+        });
+    };
 });

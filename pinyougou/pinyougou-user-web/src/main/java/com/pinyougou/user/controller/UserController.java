@@ -2,18 +2,19 @@ package com.pinyougou.user.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.util.PhoneFormatCheckUtils;
-import com.pinyougou.pojo.TbUser;
+import com.pinyougou.order.service.OrderItemService;
+import com.pinyougou.order.service.OrderService;
+import com.pinyougou.pojo.*;
+import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.user.service.UserService;
+import com.pinyougou.vo.Orders;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
 @RequestMapping("/user")
@@ -23,12 +24,23 @@ public class UserController {
     @Reference
     private UserService userService;
 
+    @Reference
+    private OrderService orderService;
+
+    @Reference
+    private OrderItemService orderItemService;
+
+    @Reference
+    private GoodsService goodsService;
+
+
     /**
      * 获取当前登录用户信息
+     *
      * @return 用户信息
      */
     @GetMapping("/getUsername")
-    public Map<String, Object> getUsername(){
+    public Map<String, Object> getUsername() {
         Map<String, Object> resultMap = new HashMap<>();
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         resultMap.put("username", username);
@@ -37,11 +49,12 @@ public class UserController {
 
     /**
      * 发送短信验证码
+     *
      * @param phone 手机号
      * @return 操作结果
      */
     @GetMapping("/sendSmsCode")
-    public Result sendSmsCode(String phone){
+    public Result sendSmsCode(String phone) {
         Result result = Result.fail("发送短信验证码失败");
         try {
             if (PhoneFormatCheckUtils.isPhoneLegal(phone)) {
@@ -63,14 +76,15 @@ public class UserController {
     }
 
     @GetMapping("/findPage")
-    public PageResult findPage(@RequestParam(value = "page", defaultValue = "1")Integer page,
-                               @RequestParam(value = "rows", defaultValue = "10")Integer rows) {
+    public PageResult findPage(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                               @RequestParam(value = "rows", defaultValue = "10") Integer rows) {
         return userService.findPage(page, rows);
     }
 
     /**
      * 验证验证码后保存用户信息到数据库表中
-     * @param user 用户信息
+     *
+     * @param user    用户信息
      * @param smsCode 用户输入验证码
      * @return 操作结果
      */
@@ -127,15 +141,25 @@ public class UserController {
 
     /**
      * 分页查询列表
+     *
      * @param user 查询条件
      * @param page 页号
      * @param rows 每页大小
      * @return
      */
     @PostMapping("/search")
-    public PageResult search(@RequestBody  TbUser user, @RequestParam(value = "page", defaultValue = "1")Integer page,
-                               @RequestParam(value = "rows", defaultValue = "10")Integer rows) {
+    public PageResult search(@RequestBody TbUser user, @RequestParam(value = "page", defaultValue = "1") Integer page,
+                             @RequestParam(value = "rows", defaultValue = "10") Integer rows) {
         return userService.search(page, rows, user);
     }
+
+
+    @GetMapping("/findAllOrder")
+    public List<Orders> findAllOrder() {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Orders> orders = orderService.findOrdersByUserIdAndOrderId(userId);
+        return orders;
+    }
+
 
 }
