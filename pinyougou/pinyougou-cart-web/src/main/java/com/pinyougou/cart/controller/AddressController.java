@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 public class AddressController {
 
-    @Reference
+    @Reference(timeout = 1000000)
     private AddressService addressService;
 
     /**

@@ -2,6 +2,9 @@ package com.pinyougou.search.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSONObject;
+import com.pinyougou.mapper.GoodsMapper;
+import com.pinyougou.mapper.ItemMapper;
+import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.search.service.ItemSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +16,15 @@ import org.springframework.data.solr.core.query.result.HighlightPage;
 import org.springframework.data.solr.core.query.result.ScoredPage;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ItemSearchServiceImpl implements ItemSearchService {
 
     @Autowired
     private SolrTemplate solrTemplate;
+    @Autowired
+    private ItemMapper itemMapper;
 
     @Override
     public Map<String, Object> search(Map<String, Object> searchMap) {
@@ -176,4 +178,17 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         solrTemplate.delete(query);
         solrTemplate.commit();
     }
+    /**
+     * 根据商家id商家商品列表
+     * @param sellerId 商家id
+     * @return 商家商品列表
+     */
+    @Override
+    public List<TbItem> findSellerList(String sellerId) {
+         TbItem tbItem=new TbItem();
+        tbItem.setSellerId(sellerId);
+        List<TbItem> sellerList = itemMapper.select(tbItem);
+        return sellerList;
+    }
+
 }

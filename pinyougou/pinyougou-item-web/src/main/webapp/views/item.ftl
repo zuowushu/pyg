@@ -170,6 +170,9 @@
                                 <li>
                                     <a href="#" ng-click="addToCart()" class="sui-btn  btn-danger addshopcar">加入购物车</a>
                                 </li>
+                                <li>
+                                    <a href="#" ng-click="goinSeller('${goods.sellerId}')" class="sui-btn  btn-danger addshopcar">进入店铺</a>
+                                </li>
                             </ul>
                         </div>
                     </div>

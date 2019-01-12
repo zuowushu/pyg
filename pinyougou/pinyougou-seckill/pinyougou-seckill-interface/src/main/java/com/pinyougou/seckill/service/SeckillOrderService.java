@@ -3,6 +3,9 @@ package com.pinyougou.seckill.service;
 import com.pinyougou.pojo.TbSeckillOrder;
 import com.pinyougou.service.BaseService;
 import com.pinyougou.vo.PageResult;
+import com.pinyougou.vo.SecKillGoods;
+
+import java.util.List;
 
 public interface SeckillOrderService extends BaseService<TbSeckillOrder> {
 
@@ -35,4 +38,6 @@ public interface SeckillOrderService extends BaseService<TbSeckillOrder> {
      * @param outTradeNo 订单号
      */
     void removeSeckillOrderInRedis(String outTradeNo) throws InterruptedException;
+
+    List<SecKillGoods> findAllSecKillOrderByUserId(String userId);
 }

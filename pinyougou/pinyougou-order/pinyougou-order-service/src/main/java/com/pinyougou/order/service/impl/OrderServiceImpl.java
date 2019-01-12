@@ -1,45 +1,53 @@
 package com.pinyougou.order.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinyougou.common.util.IdWorker;
-import com.pinyougou.mapper.OrderItemMapper;
-import com.pinyougou.mapper.OrderMapper;
-import com.pinyougou.mapper.PayLogMapper;
-import com.pinyougou.pojo.TbOrder;
+import com.pinyougou.mapper.*;
+import com.pinyougou.pojo.*;
 import com.pinyougou.order.service.OrderService;
-import com.pinyougou.pojo.TbOrderItem;
-import com.pinyougou.pojo.TbPayLog;
 import com.pinyougou.service.impl.BaseServiceImpl;
 import com.pinyougou.vo.Cart;
+import com.pinyougou.vo.Orders;
 import com.pinyougou.vo.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.persistence.Id;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service(interfaceClass = OrderService.class)
 public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderService {
 
     @Autowired
     private OrderMapper orderMapper;
+
     @Autowired
     private OrderItemMapper orderItemMapper;
+
+    @Autowired
+    private ItemMapper itemMapper;
+
     @Autowired
     private PayLogMapper payLogMapper;
+
+    @Autowired
+    private GoodsDescMapper goodsDescMapper;
 
     @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired
     private IdWorker idWorker;
+
 
     //所有用户的购物车数据对应在redis中的key名称
     private static final String CART_LIST = "CART_LIST";
@@ -50,9 +58,20 @@ public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderS
 
         Example example = new Example(TbOrder.class);
         Example.Criteria criteria = example.createCriteria();
-        /*if(!StringUtils.isEmpty(order.get***())){
-            criteria.andLike("***", "%" + order.get***() + "%");
-        }*/
+
+        if (!StringUtils.isEmpty(order.getSellerId())) {
+            criteria.andEqualTo("sellerId", order.getSellerId());
+        }
+        if (!StringUtils.isEmpty(order.getOrderId())) {
+            criteria.andLike("orderId", "%" + order.getOrderId() + "%");
+        }
+        if (!StringUtils.isEmpty(order.getShippingCode())) {
+            criteria.andLike("shippingCode", "%" + order.getShippingCode() + "%");
+        }
+
+        if (!StringUtils.isEmpty(order.getStatus())) {
+            criteria.andEqualTo("status", order.getStatus());
+        }
 
         List<TbOrder> list = orderMapper.selectByExample(example);
         PageInfo<TbOrder> pageInfo = new PageInfo<>(list);
@@ -68,7 +87,7 @@ public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderS
         List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps(CART_LIST).get(order.getUserId());
 
         //2. 遍历购物车列表，每一个Cart就是一个订单
-        if(cartList != null && cartList.size() > 0) {
+        if (cartList != null && cartList.size() > 0) {
             //本次支付总金额
             double totalFee = 0.0;
             //订单的支付总金额
@@ -130,7 +149,7 @@ public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderS
                 payLog.setPayType(order.getPaymentType());
                 //本次要支付的总金额 = 所有订单的总金额之和
                 //微信那边要求支付的总金额必须为长整型，单位精确到分
-                payLog.setTotalFee((long)(totalFee*100));
+                payLog.setTotalFee((long) (totalFee * 100));
 
                 //本次支付的所有订单，使用,分隔
                 payLog.setOrderList(orderIds);
@@ -174,4 +193,68 @@ public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderS
 
         orderMapper.updateByExampleSelective(order, example);
     }
+
+    @Override
+    public List<TbOrder> findAllByUserId(String userId) {
+        Example example = new Example(TbOrder.class);
+        example.createCriteria().andEqualTo("userId", userId);
+        return orderMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<Orders> findOrdersByUserIdAndOrderId(String userId) {
+        List<Orders> ordersList = new ArrayList<>();
+        Example example = new Example(TbOrder.class);
+        example.createCriteria().andEqualTo("userId", userId);
+        List<TbOrder> orderList = orderMapper.selectByExample(example);
+        for (TbOrder order : orderList) {
+            Orders orders = new Orders();
+            orders.setCreateTime(order.getCreateTime());
+            orders.setStatus(order.getStatus());
+            orders.setPayment(order.getPayment());
+            Long orderId = order.getOrderId();
+            orders.setOrderId(orderId);
+            if ("1".equals(order.getStatus())) {
+                orders.setTransaction("等待买家付款");
+            }
+            if ("2".equals(order.getStatus())) {
+                orders.setTransaction("买家已支付");
+            }
+            if ("3".equals(order.getStatus())) {
+                orders.setTransaction("未发货");
+            }
+            if ("4".equals(order.getStatus())) {
+                orders.setTransaction("已发货");
+            }
+            if ("5".equals(order.getStatus())) {
+                orders.setTransaction("交易成功");
+            }
+            if ("6".equals(order.getStatus())) {
+                orders.setTransaction("交易关闭");
+            }
+            if ("7".equals(order.getStatus())) {
+                orders.setTransaction("待评价");
+            }
+            example = new Example(TbOrderItem.class);
+            example.createCriteria().andEqualTo("orderId", orderId);
+            List<TbOrderItem> orderItemList = orderItemMapper.selectByExample(example);
+            orders.setOrderItemList(orderItemList);
+            for (TbOrderItem orderItem : orderItemList) {
+
+                TbItem item = itemMapper.selectByPrimaryKey(orderItem.getItemId());
+                orders.setSeller(item.getSeller());
+                orders.setItemId(item.getId());
+
+                TbGoodsDesc goodsDesc = goodsDescMapper.selectByPrimaryKey(orderItem.getGoodsId());
+                /*JSON.toJSONString(goodsDesc);
+                orders.setGoodsDesc(goodsDesc.getCustomAttributeItems());*/
+                orders.setGoodsId(goodsDesc.getGoodsId());
+            }
+
+            ordersList.add(orders);
+        }
+
+        return ordersList;
+    }
+
 }

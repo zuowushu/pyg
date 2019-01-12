@@ -2,18 +2,21 @@ package com.pinyougou.user.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.common.util.PhoneFormatCheckUtils;
-import com.pinyougou.pojo.TbUser;
+import com.pinyougou.order.service.OrderItemService;
+import com.pinyougou.order.service.OrderService;
+import com.pinyougou.pojo.*;
+import com.pinyougou.seckill.service.SeckillOrderService;
+import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.user.service.UserService;
+import com.pinyougou.vo.Orders;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import com.pinyougou.vo.SecKillGoods;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.PatternSyntaxException;
 
 @RequestMapping("/user")
@@ -23,23 +26,15 @@ public class UserController {
     @Reference
     private UserService userService;
 
-    @PostMapping("/addUser")
-    /*public Result addUser(@RequestBody TbUser tbUser){
-        try {
-            if (tbUser !=null){
-                String name = SecurityContextHolder.getContext().getAuthentication().getName();
-                int i = userService.updateUser(tbUser, name);
-                if (i==0){
-                    return Result.fail("修改失败");
-                }
-                return Result.ok("修改成功");
-            }else {
-                return Result.fail("修改失败");
-            }
-        } catch (Exception e) {
-            return Result.fail("修改失败");
-        }
-    }*/
+    @Reference
+    private OrderService orderService;
+
+    @Reference
+    private SeckillOrderService seckillOrderService;
+
+    @Reference
+    private GoodsService goodsService;
+
 
     /**
      * 获取当前登录用户信息
@@ -155,5 +150,22 @@ public class UserController {
                                @RequestParam(value = "rows", defaultValue = "10")Integer rows) {
         return userService.search(page, rows, user);
     }
+
+
+    @GetMapping("/findAllOrder")
+    public List<Orders> findAllOrder() {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Orders> orders = orderService.findOrdersByUserIdAndOrderId(userId);
+        return orders;
+    }
+
+    @GetMapping("/findAllSecKillOrder")
+    public List<SecKillGoods> findAllSecKillOrder(){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<SecKillGoods> secKillGoodsList = seckillOrderService.findAllSecKillOrderByUserId(userId);
+
+        return secKillGoodsList;
+    }
+
 
 }
