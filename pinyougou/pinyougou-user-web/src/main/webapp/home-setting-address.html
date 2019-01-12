@@ -215,10 +215,11 @@ $(function(){
                                         <td>{{address.address}}</td>
                                         <td>{{address.mobile}}</td>
                                         <td>
-                                            <a href="#">编辑</a>
-                                            <a href="#">删除</a>
-                                            <a href="#" ng-if="address.isDefault=='1'">默认地址</a>
-                                            <a href="#" ng-else>设为默认</a>
+                                            <a data-toggle="modal"  data-target=".edit" data-keyboard="false"   ng-click="findOne(address.id)">编辑</a>
+											<a href="#" ng-click="deleteAddress(address.id)">删除</a>
+                                            <!--<a href="#" ng-if="address.isDefault=='1'">默认地址</a>-->
+                                            <a href="#" ng-if="address.isDefault=='0'" ng-click="updateIsDefault(0)">设为默认</a>
+											<span class="base" ng-if="address.isDefault=='1'">默认地址</span>
                                         </td>
                                     </tr>
                                 </tbody>

@@ -36,5 +36,16 @@ public interface AddressService extends BaseService<TbAddress> {
      */
     List<TbAreas> findAreaByCityId(String cityid);
 
-
+    /**
+     * 根据地址的contact查询地址
+     * @param contact
+     * @return TbAddress
+     */
+    TbAddress findOneAddress(String contact);
+    /**
+     * 设置为默认地址
+     * @param isDefault
+     * @return
+     */
+    int updateIsDefault(String isDefault);
 }

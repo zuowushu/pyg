@@ -23,6 +23,24 @@ public class UserController {
     @Reference
     private UserService userService;
 
+    @PostMapping("/addUser")
+    /*public Result addUser(@RequestBody TbUser tbUser){
+        try {
+            if (tbUser !=null){
+                String name = SecurityContextHolder.getContext().getAuthentication().getName();
+                int i = userService.updateUser(tbUser, name);
+                if (i==0){
+                    return Result.fail("修改失败");
+                }
+                return Result.ok("修改成功");
+            }else {
+                return Result.fail("修改失败");
+            }
+        } catch (Exception e) {
+            return Result.fail("修改失败");
+        }
+    }*/
+
     /**
      * 获取当前登录用户信息
      * @return 用户信息

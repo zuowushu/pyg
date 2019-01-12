@@ -49,6 +49,16 @@ public class AddressController {
     public List<TbCities> findByCityList(String provinceid) {
         return addressService.findByCityList(provinceid);
     }
+
+    /**
+     * 设置为默认地址
+     * @param isDefault
+     * @return TbAddress
+     */
+    @GetMapping("/updateIsDefault")
+    public int updateIsDefault(String isDefault) {
+        return addressService.updateIsDefault(isDefault);
+    }
     /**
      * 根据市级id查找县、区
      * @param cityid
@@ -59,6 +69,15 @@ public class AddressController {
         return addressService.findAreaByCityId(cityid);
     }
 
+    /**
+     * 根据地址的contact查询地址
+     * @param contact
+     * @return TbAddress
+     */
+    @GetMapping("/findOneAddress")
+    public TbAddress findOneAddress(String contact) {
+        return addressService.findOneAddress(contact);
+    }
 
     @RequestMapping("/findAll")
     public List<TbAddress> findAll() {
@@ -76,20 +95,30 @@ public class AddressController {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         Result result = Result.fail("增加失败");
         try {
-            if (PhoneFormatCheckUtils.isPhoneLegal(address.getMobile())) {
-                address.setCreateDate(new Date());
-                address.setIsDefault("0");
-                address.setUserId(userId);
-                addressService.add(address);
-                result = Result.ok("增加成功");
+            if (address.getId()==null) {//新增
+                if (PhoneFormatCheckUtils.isPhoneLegal(address.getMobile())) {
+                    address.setCreateDate(new Date());
+                    address.setIsDefault("0");
+                    address.setUserId(userId);
+                    addressService.add(address);
+                    result = Result.ok("增加成功");
+                } else {
+                    result = Result.fail("手机号码格式不正确，增加失败");
+                }
             }else {
-                result = Result.fail("手机号码格式不正确，增加失败");
+                try {
+                    addressService.update(address);
+                    return Result.ok("修改成功");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
     }
+
 
     @GetMapping("/findOne")
     public TbAddress findOne(Long id) {

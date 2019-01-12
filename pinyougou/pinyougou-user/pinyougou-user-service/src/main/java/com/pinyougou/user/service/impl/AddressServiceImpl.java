@@ -66,7 +66,7 @@ public class AddressServiceImpl extends BaseServiceImpl<TbAddress> implements Ad
     public List<TbCities> findByCityList(String provinceid) {
         TbCities citys=new TbCities();
         citys.setProvinceid(provinceid);
-        List<TbCities> citiesList = (List<TbCities>) citiesMapper.select(citys);
+        List<TbCities> citiesList = citiesMapper.select(citys);
         return citiesList;
     }
 
@@ -82,7 +82,29 @@ public class AddressServiceImpl extends BaseServiceImpl<TbAddress> implements Ad
         return areasMapper.select(area);
     }
 
+    @Override
+    public TbAddress findOneAddress(String contact) {
+        TbAddress address = new TbAddress();
+        address.setContact(contact);
+        address = addressMapper.selectOne(address);
+        return address;
+    }
+    /**
+     * 设置为默认地址
+     * @param isDefault
+     * @return
+     */
+    @Override
+    public int updateIsDefault(String isDefault) {
+        if ("0".equals(isDefault)){
+            String param = 1+"";
+            TbAddress address = new TbAddress();
+            address.setIsDefault(param);
+            return addressMapper.updateByExample(address,param);
+        }
+        return 0;
 
+    }
 
 
 }
