@@ -202,11 +202,11 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
             example.createCriteria().andEqualTo("id", seckillOrder.getSeckillId());
             List<TbSeckillGoods> tbSeckillGoods = seckillGoodsMapper.selectByExample(example);
             seckillGoods.setSeckillGoods(tbSeckillGoods);
-            for (TbSeckillGoods tbSeckillGood : tbSeckillGoods) {
+            /*for (TbSeckillGoods tbSeckillGood : tbSeckillGoods) {
                 String sellerId = tbSeckillGood.getSellerId();
                 TbItem item = itemMapper.selectByPrimaryKey(tbSeckillGood.getItemId());
                 seckillGoods.setSeller(item.getSeller());
-            }
+            }*/
             seckillGoodsList.add(seckillGoods);
         }
 
