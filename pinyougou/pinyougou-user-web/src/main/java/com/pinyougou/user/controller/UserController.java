@@ -5,11 +5,13 @@ import com.pinyougou.common.util.PhoneFormatCheckUtils;
 import com.pinyougou.order.service.OrderItemService;
 import com.pinyougou.order.service.OrderService;
 import com.pinyougou.pojo.*;
+import com.pinyougou.seckill.service.SeckillOrderService;
 import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.user.service.UserService;
 import com.pinyougou.vo.Orders;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import com.pinyougou.vo.SecKillGoods;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +28,9 @@ public class UserController {
 
     @Reference
     private OrderService orderService;
-
+    
     @Reference
-    private OrderItemService orderItemService;
+    private SeckillOrderService seckillOrderService;
 
     @Reference
     private GoodsService goodsService;
@@ -155,11 +157,18 @@ public class UserController {
 
 
     @GetMapping("/findAllOrder")
-    @CrossOrigin(origins = {"http://item.pinyougou.com","http://search.pinyougou.com","http://cart.pinyougou.com"}, allowCredentials = "true")
     public List<Orders> findAllOrder() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Orders> orders = orderService.findOrdersByUserIdAndOrderId(userId);
         return orders;
+    }
+
+    @GetMapping("/findAllSecKillOrder")
+    public List<SecKillGoods> findAllSecKillOrder(){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<SecKillGoods> secKillGoodsList = seckillOrderService.findAllSecKillOrderByUserId(userId);
+
+        return secKillGoodsList;
     }
 
 

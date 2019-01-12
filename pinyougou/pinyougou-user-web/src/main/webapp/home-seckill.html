@@ -16,7 +16,7 @@
     <script src="js/controller/indexController.js"></script>
 </head>
 
-<body ng-app="pinyougou" ng-controller="indexController" ng-init="getUsername();findAllOrder();">
+<body ng-app="pinyougou" ng-controller="indexController" ng-init="getUsername();findAllSecKillOrder()">
 <!-- 头部栏位 -->
 <!--页面顶部-->
 <div id="nav-bottom">
@@ -216,21 +216,21 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="orders" ng-repeat="orders in orderList">
+                        <div class="orders" ng-repeat="orders in secKillOrderList">
 
                             <!--order1-->
                             <div class="choose-title" >
                                 <label data-toggle="checkbox" class="checkbox-pretty ">
-                                    <input type="checkbox" checked="checked"><span>{{orders.createTime | date:'yyyy-MM-dd HH:mm:ss'}}　订单编号：{{orders.orderId}}  店铺：{{orders.seller}} <a>和我联系</a></span>
+                                    <input type="checkbox" checked="checked"><span>{{orders.createTime | date:'yyyy-MM-dd HH:mm:ss'}}　订单编号：{{orders.id}}  店铺：{{orders.seller}} <a>和我联系</a></span>
                                 </label>
                                 <a class="sui-btn btn-info share-btn">分享</a>
                             </div>
                             <table class="sui-table table-bordered order-datatable">
                                 <tbody>
-                                <tr ng-repeat="order in orders.orderItemList">
+                                <tr ng-repeat="order in orders.seckillGoods">
                                     <td width="35%">
-                                        <div class="typographic"><img src="{{order.picPath}}" width="100px" height="100px"/>
-                                            <a href=http://item.pinyougou.com/{{orders.goodsId}}.html class="block-text">{{order.title}}</a>
+                                        <div class="typographic"><img src="{{order.smallPic}}" width="100px" height="100px"/>
+                                            <a href=http://item.pinyougou.com/{{order.goodsId}}.html class="block-text">{{order.title}}</a>
                                             <!--<span class="guige">规格：{{orders.goodsDesc}}</span>-->
                                         </div>
                                     </td>
@@ -240,20 +240,20 @@
                                             <li>¥0.01</li>
                                         </ul>
                                     </td>
-                                    <td width="5%" class="center">{{order.num}}</td>
+                                    <td width="5%" class="center">1</td>
                                     <td width="8%" class="center">
-                                        <ul class="unstyled" ng-if="orders.status == 1 ? 'style=display:none' : ''">
-                                            <li>未付款</li>
+                                        <ul class="unstyled" ng-if="order.status == 1 ? 'style=display:none' : ''">
+                                            <li>已付款</li>
                                             <li><a href="#" class="btn">退货/退款</a></li>
                                         </ul>
-                                        <ul class="unstyled" ng-if="orders.status == 2 ? 'style=display:none' : ''">
-                                            <li>付款未发货</li>
+                                        <ul class="unstyled" ng-if="order.status == 2 ? 'style=display:none' : ''">
+                                            <li>已评价</li>
                                             <li><a href="#" class="btn">退货/退款</a></li>
                                         </ul>
                                     </td>
                                     <td width="10%" class="center" >
                                         <ul class="unstyled">
-                                            <li>¥{{order.totalFee}}</li>
+                                            <li>¥{{orders.money}}</li>
                                             <li>（含运费：￥0.00）</li>
                                         </ul>
                                     </td>
@@ -264,25 +264,13 @@
                                         </ul>
                                     </td>
                                     <td width="10%" class="center">
-                                        <ul class="unstyled"  ng-if="orders.status == 1 ? 'style=display:none' : ''">
-                                            <li><a href="http://cart.pinyougou.com/pay.html#?outTradeNo={{orders.orderId}}&totalFee={{order.totalFee}}" class="sui-btn btn-info">立即付款</a></li>
-                                            <li><a href="#" class="btn">取消订单</a></li>
-
-                                        </ul>
-
-                                        <ul class="unstyled" ng-if="orders.status == 2 ? 'style=display:none' : ''">
-                                            <li><a href="#" class="sui-btn btn-info">提醒发货</a></li>
-                                        </ul>
-
-                                        <ul class="unstyled"  ng-if="orders.status == 3 ? 'style=display:none' : ''">
-                                            <li><a href="#" class="sui-btn btn-info">提醒发货</a></li>
-                                        </ul>
-                                        <ul class="unstyled"  ng-if="orders.status == 4 ? 'style=display:none' : ''">
-                                            <li>还剩4天23时</li>
-                                            <li><a href="#" class="sui-btn btn-info">确认发货</a></li>
-                                        </ul>
-                                        <ul class="unstyled"  ng-if="orders.status == 5 ? 'style=display:none' : ''">
+                                        <ul class="unstyled"  ng-if="order.status == 2 ? 'style=display:none' : ''">
                                             <li><a href="#" class="sui-btn btn-info">申请售后</a></li>
+                                        </ul>
+
+                                        <ul class="unstyled"  ng-if="order.status == 1 ? 'style=display:none' : ''">
+                                            <li><a href="#" class="sui-btn btn-info">提醒发货</a></li>
+                                            <li><a href="#" class="btn">取消订单</a></li>
                                         </ul>
                                     </td>
                                 </tr>

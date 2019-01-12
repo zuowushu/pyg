@@ -5,18 +5,22 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinyougou.common.util.IdWorker;
 import com.pinyougou.common.util.RedisLock;
+import com.pinyougou.mapper.ItemMapper;
 import com.pinyougou.mapper.SeckillGoodsMapper;
 import com.pinyougou.mapper.SeckillOrderMapper;
+import com.pinyougou.pojo.TbItem;
 import com.pinyougou.pojo.TbSeckillGoods;
 import com.pinyougou.pojo.TbSeckillOrder;
 import com.pinyougou.seckill.service.SeckillOrderService;
 import com.pinyougou.service.impl.BaseServiceImpl;
 import com.pinyougou.vo.PageResult;
+import com.pinyougou.vo.SecKillGoods;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +37,9 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
     private SeckillGoodsMapper seckillGoodsMapper;
 
     @Autowired
+    private ItemMapper itemMapper;
+
+    @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired
@@ -44,15 +51,15 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
 
         Example example = new Example(TbSeckillOrder.class);
         Example.Criteria criteria = example.createCriteria();
-        if(!StringUtils.isEmpty(seckillOrder.getId())){
+        if (!StringUtils.isEmpty(seckillOrder.getId())) {
             criteria.andLike("id", "%" + seckillOrder.getId() + "%");
         }
 
-        if(!StringUtils.isEmpty(seckillOrder.getSellerId())){
-            criteria.andLike("sellerId",seckillOrder.getSellerId());
+        if (!StringUtils.isEmpty(seckillOrder.getSellerId())) {
+            criteria.andLike("sellerId", seckillOrder.getSellerId());
         }
-        if(!StringUtils.isEmpty(seckillOrder.getStatus())){
-            criteria.andLike("status","%"+seckillOrder.getStatus()+"%");
+        if (!StringUtils.isEmpty(seckillOrder.getStatus())) {
+            criteria.andLike("status", "%" + seckillOrder.getStatus() + "%");
         }
 
         List<TbSeckillOrder> list = seckillOrderMapper.selectByExample(example);
@@ -65,7 +72,7 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
     public String submitOrder(Long seckillId, String username) throws InterruptedException {
         //加分布式锁
         RedisLock redisLock = new RedisLock(redisTemplate);
-        if(redisLock.lock(seckillId.toString())) {
+        if (redisLock.lock(seckillId.toString())) {
             //1. 判断商品存在并且库存大于0
             TbSeckillGoods seckillGoods = (TbSeckillGoods) redisTemplate.boundHashOps(SeckillGoodsServiceImpl.SECKILL_GOODS).get(seckillId);
             if (seckillGoods == null) {
@@ -75,8 +82,8 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
                 throw new RuntimeException("商品已经秒杀完!");
             }
             //2. 将商品的库存减1
-            seckillGoods.setStockCount(seckillGoods.getStockCount()-1);
-            if(seckillGoods.getStockCount() > 0) {
+            seckillGoods.setStockCount(seckillGoods.getStockCount() - 1);
+            if (seckillGoods.getStockCount() > 0) {
                 //   2.1. 库存大于0；更新redis中商品库存
                 redisTemplate.boundHashOps(SeckillGoodsServiceImpl.SECKILL_GOODS).put(seckillId, seckillGoods);
             } else {
@@ -131,15 +138,15 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
     public void removeSeckillOrderInRedis(String outTradeNo) throws InterruptedException {
         //1. 获取订单判断订单的存在；
         TbSeckillOrder seckillOrder = findSeckillOrderInRedisByOutTradeNo(outTradeNo);
-        if(seckillOrder != null) {
+        if (seckillOrder != null) {
             //   加分布式锁
             RedisLock redisLock = new RedisLock(redisTemplate);
-            if(redisLock.lock(seckillOrder.getSeckillId().toString())) {
+            if (redisLock.lock(seckillOrder.getSeckillId().toString())) {
                 //2. 根据秒杀商品id获取在redis中的商品；如果不存在则到mysql中查询该商品并更新库存后更新到redis中；
                 TbSeckillGoods seckillGoods = (TbSeckillGoods) redisTemplate.boundHashOps(SeckillGoodsServiceImpl.SECKILL_GOODS)
                         .get(seckillOrder.getSeckillId());
                 if (seckillGoods == null) {
-                     seckillGoods = seckillGoodsMapper.selectByPrimaryKey(seckillOrder.getSeckillId());
+                    seckillGoods = seckillGoodsMapper.selectByPrimaryKey(seckillOrder.getSeckillId());
                 }
                 //加回剩余库存
                 seckillGoods.setStockCount(seckillGoods.getStockCount() + 1);
@@ -152,5 +159,57 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
                 redisTemplate.boundHashOps(SECKILL_ORDERS).delete(outTradeNo);
             }
         }
+    }
+
+    @Override
+    public List<SecKillGoods> findAllSecKillOrderByUserId(String userId) {
+        List<SecKillGoods> seckillGoodsList = new ArrayList<>();
+        Example example = new Example(TbSeckillOrder.class);
+        example.createCriteria().andEqualTo("userId", userId);
+        List<TbSeckillOrder> seckillOrderList = seckillOrderMapper.selectByExample(example);
+        for (TbSeckillOrder seckillOrder : seckillOrderList) {
+            SecKillGoods seckillGoods = new SecKillGoods();
+            seckillGoods.setId(seckillOrder.getId());
+            seckillGoods.setMoney(seckillOrder.getMoney());
+            seckillGoods.setPayTime(seckillOrder.getPayTime());
+            seckillGoods.setCreateTime(seckillOrder.getCreateTime());
+
+            if ("1".equals(seckillOrder.getStatus())) {
+                seckillGoods.setStatus("买家未付款");
+            }
+            if ("2".equals(seckillOrder.getStatus())) {
+                seckillGoods.setStatus("买家已付款");
+            }
+
+            if ("2".equals(seckillOrder.getStatus())) {
+                seckillGoods.setStatus("未发货");
+            }
+            if ("3".equals(seckillOrder.getStatus())) {
+                seckillGoods.setStatus("已发货");
+            }
+
+            if ("4".equals(seckillOrder.getStatus())) {
+                seckillGoods.setStatus("交易成功");
+            }
+            if ("3".equals(seckillOrder.getStatus())) {
+                seckillGoods.setStatus("交易关闭");
+            }
+            if ("4".equals(seckillOrder.getStatus())) {
+                seckillGoods.setStatus("待评价");
+            }
+
+            example = new Example(TbSeckillGoods.class);
+            example.createCriteria().andEqualTo("id", seckillOrder.getSeckillId());
+            List<TbSeckillGoods> tbSeckillGoods = seckillGoodsMapper.selectByExample(example);
+            seckillGoods.setSeckillGoods(tbSeckillGoods);
+            for (TbSeckillGoods tbSeckillGood : tbSeckillGoods) {
+                String sellerId = tbSeckillGood.getSellerId();
+                TbItem item = itemMapper.selectByPrimaryKey(tbSeckillGood.getItemId());
+                seckillGoods.setSeller(item.getSeller());
+            }
+            seckillGoodsList.add(seckillGoods);
+        }
+
+        return seckillGoodsList;
     }
 }

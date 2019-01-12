@@ -284,6 +284,12 @@ $(function(){
 												<ul class="unstyled"  ng-if="orders.status == 5 ? 'style=display:none' : ''">
 													<li><a href="#" class="sui-btn btn-info">申请售后</a></li>
 												</ul>
+												<ul class="unstyled"  ng-if="orders.status == 6 ? 'style=display:none' : ''">
+													<li><a href="http://cart.pinyougou.com/cart/addItemToCartList.do?itemId={{orders.itemId}}&num={{order.num}}" ng-click="addToCartList()" class="sui-btn btn-info">重新购买</a></li>
+												</ul>
+												<ul class="unstyled"  ng-if="orders.status == 7 ? 'style=display:none' : ''">
+													<li><a href="#" class="sui-btn btn-info">评价</a></li>
+												</ul>
                                             </td>
                                         </tr>
                                         
