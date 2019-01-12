@@ -17,7 +17,29 @@ app.controller("sellerController", function ($scope, $controller, sellerService)
         });
     };
 
-    $scope.save = function () {
+    //保存修改商家信息
+    $scope.save=function(){
+        sellerService.update($scope.entity).success(function (response) {
+            if(response.success){
+                $scope.reloadList();
+            } else {
+                alert(response.message);
+            }
+        });
+    }
+    //保存修改商家信息
+    $scope.submit=function(){
+        sellerService.update($scope.entity).success(function (response) {
+            if(response.success){
+                alert(response.message);
+                parent.location.href="index.html";
+            } else {
+                alert(response.message);
+            }
+        });
+    }
+
+   /* $scope.save = function () {
         var object;
         if($scope.entity.id != null){//更新
             object = sellerService.update($scope.entity);
@@ -31,10 +53,10 @@ app.controller("sellerController", function ($scope, $controller, sellerService)
                 alert(response.message);
             }
         });
-    };
+    };*/
 
-    $scope.findOne = function (id) {
-        sellerService.findOne(id).success(function (response) {
+    $scope.findOne = function () {
+        sellerService.findOne().success(function (response) {
             $scope.entity = response;
         });
     };
